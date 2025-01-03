@@ -1,4 +1,4 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
@@ -31,9 +31,9 @@
             position: relative;
         }
         .preload button {
-            background: #ff060600;
+            background: transparent;
             color: #ffffff;
-            border: none;
+            border: 2px solid #29bbff;
             padding: 10px 20px;
             font-size: 1.07em;
             cursor: pointer;
@@ -41,17 +41,17 @@
         }
         .preload button:hover {
             color: #29bbff;
-            text-shadow: 0 0 8px #008bfd, 0 0 15px #07cdff, 0 0 20px #04b2e7; /* LED efekt */
-            transform: scale(3); /* Powiększenie przycisku */
+            text-shadow: 0 0 8px #008bfd, 0 0 15px #07cdff, 0 0 20px #04b2e7;
+            transform: scale(1.2);
         }
         .upload-container {
             display: none;
             flex-direction: column;
             align-items: center;
-            background: #00000056;
+            background: rgba(0, 0, 0, 0.6);
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0px 4px 15px rgba(0, 225, 255, 0.404);
+            box-shadow: 0px 4px 15px rgba(0, 255, 255, 0.8);
             text-align: center;
             width: 90%;
             max-width: 500px;
@@ -59,26 +59,31 @@
         .upload-container h1 {
             font-size: 1.8em;
             margin-bottom: 10px;
+            color: #00aeff;
+            text-shadow: 0 0 10px #04c2cf, 0 0 20px #0e3541;
         }
         .upload-container p {
             font-size: 1em;
             margin-bottom: 20px;
+            color: #29bbff;
         }
         .upload-container input[type="file"] {
             margin-bottom: 15px;
         }
         .upload-container button {
-            background: #ffffff62;
-            color: #000000;
+            background: #29bbffab;
+            color: #ffffff;
             border: none;
             padding: 10px 20px;
             font-size: 1em;
             border-radius: 5px;
             cursor: pointer;
-            transition: background 0.3s;
+            box-shadow: 0 0 10px #29bbff, 0 0 20px #1d91cc;
+            transition: background 0.3s, box-shadow 0.3s;
         }
         .upload-container button:hover {
-            background: #e0e0e0;
+            background: #007acc;
+            box-shadow: 0 0 15px #122735, 0 0 30px #005f99;
         }
         #progressBarContainer {
             width: 100%;
@@ -90,11 +95,13 @@
         #progressBar {
             width: 0;
             height: 10px;
-            background: linear-gradient(90deg, #76c7c0, #50a3a2);
+            background: linear-gradient(90deg, #29bbff, #007acc);
+            box-shadow: 0 0 10px #29bbff, 0 0 20px #007acc;
             transition: width 0.3s ease-in-out;
         }
         #status {
             margin-top: 10px;
+            color: #00ffcc;
         }
         @keyframes fadeIn {
             from {
@@ -105,24 +112,13 @@
             }
         }
 
-        @keyframes popOut {
-            from {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
         .dark-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.952);
+            background: rgba(0, 0, 0, 0.9);
             z-index: 10;
             display: none;
             opacity: 0;
@@ -137,11 +133,10 @@
             color: #fff;
             padding: 15px;
             border-radius: 5px;
-            box-shadow: 0 0 15px rgba(0, 225, 255, 0.87);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.87);
             display: none;
             width: 200px;
             text-align: center;
-            animation: popOut 0.5s ease-out; /* Animacja pop-out */
         }
 
         @keyframes darkenScreen {
@@ -173,52 +168,18 @@
 
     <div class="dark-overlay" id="darkOverlay"></div>
 
-    <!-- Okienko info -->
-    <div class="info-box" id="infoBox">
-        <h1>Co to Archiwum?</h1> Archiwum służy uploadu Vodów z Servera FableZone.
-    </div>
-
     <script>
         const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1324497137614061570/wtqGZC6tUXheI-2fswQfejE8AOEi9mMueLImlWcjlwvqH4Ll-nt6rw5oJ9GRYMoOVuQt';
-        const IMGUR_CLIENT_ID = 'Client-ID 217f895a1c1083b';
-
-        // Funkcja do obsługi najechania na przycisk
-        document.getElementById('goButton').addEventListener('mouseover', function() {
-            const h1 = document.querySelector('.preload h1');
-            h1.style.opacity = '0';  // Zanik tekstu "Archiwum"
-            h1.style.transform = 'scale(1.2)';  // Powiększenie tekstu
-        });
-
-        document.getElementById('goButton').addEventListener('mouseout', function() {
-            const h1 = document.querySelector('.preload h1');
-            h1.style.opacity = '1';  // Przywrócenie widoczności tekstu
-            h1.style.transform = 'scale(1)';  // Przywrócenie normalnego rozmiaru tekstu
-        });
-
-        // Wyświetlanie okienka po najechaniu na tekst "Archiwum"
-        const archiveText = document.getElementById('archiveText');
-        const infoBox = document.getElementById('infoBox');
-
-        archiveText.addEventListener('mouseover', function() {
-            infoBox.style.display = 'block'; // Pokaż okienko
-            infoBox.classList.add('popOut'); // Rozpocznij animację
-        });
-
-        archiveText.addEventListener('mouseout', function() {
-            infoBox.style.display = 'none'; // Ukryj okienko
-            infoBox.classList.remove('popOut'); // Usuń animację, aby nie była powtarzana
-        });
+        const IMGUR_CLIENT_ID = '217f895a1c1083b';
 
         function enterSite() {
             const overlay = document.getElementById('darkOverlay');
             overlay.style.display = 'block';
-            overlay.style.opacity = '1'; // Ustawienie pełnej przezroczystości
-
             setTimeout(() => {
                 document.getElementById('preload').style.display = 'none';
                 document.getElementById('uploadContainer').style.display = 'flex';
-                overlay.style.display = 'none'; // Ukryj overlay po zakończeniu animacji
-            }, 3500); // Po 3.5 sekundach, wyświetl formularz
+                overlay.style.display = 'none';
+            }, 3000);
         }
 
         document.getElementById('uploadButton').addEventListener('click', async () => {
@@ -232,14 +193,9 @@
             }
 
             const file = videoInput.files[0];
-
-            // Sprawdzenie rozmiaru pliku
-            if (file.size > 200 * 1024 * 1024) { // 200MB limit
+            if (file.size > 200 * 1024 * 1024) {
                 statusElement.textContent = 'Plik waży więcej niż 200MB. Proszę wybrać mniejszy plik.';
-                
-                // Resetowanie inputu pliku, aby użytkownik mógł wybrać nowy plik
-                videoInput.value = ''; 
-                
+                videoInput.value = '';
                 return;
             }
 
@@ -247,9 +203,8 @@
             progressBar.style.width = '0';
 
             try {
-                // Upload to Imgur
                 const formData = new FormData();
-                formData.append('video', file);
+                formData.append('image', file);
 
                 const imgurResponse = await fetch('https://api.imgur.com/3/upload', {
                     method: 'POST',
@@ -260,13 +215,13 @@
                 });
 
                 if (!imgurResponse.ok) {
-                    throw new Error('Nie udało się wrzucić pliku na imgur');
+                    const errorDetails = await imgurResponse.text();
+                    throw new Error(`Imgur Error: ${errorDetails}`);
                 }
 
                 const imgurData = await imgurResponse.json();
                 const videoUrl = imgurData.data.link;
 
-                // Send Discord webhook
                 const discordPayload = {
                     content: `Nowe Nagranie: ${videoUrl}`
                 };
@@ -280,7 +235,8 @@
                 });
 
                 if (!discordResponse.ok) {
-                    throw new Error('Nie udało się wysłać do Discordowego WebHooka');
+                    const discordErrorDetails = await discordResponse.text();
+                    throw new Error(`Discord Error: ${discordErrorDetails}`);
                 }
 
                 statusElement.textContent = 'Przesłane!';
@@ -289,21 +245,6 @@
                 statusElement.textContent = `Błąd: ${error.message}`;
             }
         });
-
-        // Funkcja do animacji przewijającego się tytułu
-        let titleText = "당신은 벨처입니다 "; // Tekst, który będzie się przewijał
-        let titleIndex = 0;
-
-        function scrollTitle() {
-            document.title = titleText.substring(titleIndex) + titleText.substring(0, titleIndex);
-            titleIndex++;
-            if (titleIndex > titleText.length) {
-                titleIndex = 0;
-            }
-        }
-
-        // Ustawiamy funkcję do przewijania tytułu co 150ms
-        setInterval(scrollTitle, 15);
     </script>
 </body>
 </html>
