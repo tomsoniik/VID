@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+\<!DOCTYPE html>
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,6 +28,7 @@
             font-size: 2.5em;
             margin-bottom: 20px;
             transition: opacity 0.5s ease-out, transform 0.3s ease;
+            position: relative;
         }
         .preload button {
             background: #ff060600;
@@ -40,8 +41,8 @@
         }
         .preload button:hover {
             color: #29bbff;
-            text-shadow: 0 0 8px #008bfd, 0 0 15px #07cdff, 0 0 20px #04b2e7; 
-            transform: scale(3); 
+            text-shadow: 0 0 8px #008bfd, 0 0 15px #07cdff, 0 0 20px #04b2e7; /* LED efekt */
+            transform: scale(3); /* Powiększenie przycisku */
         }
         .upload-container {
             display: none;
@@ -103,12 +104,15 @@
                 opacity: 1;
             }
         }
-        @keyframes darkenScreen {
+
+        @keyframes popOut {
             from {
-                background-color: rgba(0, 0, 0, 0);
+                transform: scale(0.5);
+                opacity: 0;
             }
             to {
-                background-color: rgba(0, 0, 0, 0.6);
+                transform: scale(1);
+                opacity: 1;
             }
         }
 
@@ -121,12 +125,38 @@
             background: rgba(0, 0, 0, 0.952);
             z-index: 10;
             display: none;
+            opacity: 0;
+            animation: darkenScreen 3s forwards;
+        }
+
+        .info-box {
+            position: absolute;
+            top: 20%;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 225, 255, 0.87);
+            display: none;
+            width: 200px;
+            text-align: center;
+            animation: popOut 0.5s ease-out; /* Animacja pop-out */
+        }
+
+        @keyframes darkenScreen {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
     </style>
 </head>
 <body>
     <div class="preload" id="preload">
-        <h1>Archiwum</h1>
+        <h1 id="archiveText">Archiwum tomSona</h1>
         <button id="goButton" onclick="enterSite()">Wysyłam Voda</button>
     </div>
 
@@ -143,35 +173,52 @@
 
     <div class="dark-overlay" id="darkOverlay"></div>
 
+    <!-- Okienko info -->
+    <div class="info-box" id="infoBox">
+        <h1>Co to Archiwum?</h1> Archiwum służy uploadu Vodów z Servera FableZone.
+    </div>
+
     <script>
         const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1324497137614061570/wtqGZC6tUXheI-2fswQfejE8AOEi9mMueLImlWcjlwvqH4Ll-nt6rw5oJ9GRYMoOVuQt';
         const IMGUR_CLIENT_ID = 'Client-ID 217f895a1c1083b';
 
-        
+        // Funkcja do obsługi najechania na przycisk
         document.getElementById('goButton').addEventListener('mouseover', function() {
             const h1 = document.querySelector('.preload h1');
-            h1.style.opacity = '0';  
-            h1.style.transform = 'scale(1.2)';  
+            h1.style.opacity = '0';  // Zanik tekstu "Archiwum"
+            h1.style.transform = 'scale(1.2)';  // Powiększenie tekstu
         });
 
         document.getElementById('goButton').addEventListener('mouseout', function() {
             const h1 = document.querySelector('.preload h1');
-            h1.style.opacity = '1';  
-            h1.style.transform = 'scale(1)';  
+            h1.style.opacity = '1';  // Przywrócenie widoczności tekstu
+            h1.style.transform = 'scale(1)';  // Przywrócenie normalnego rozmiaru tekstu
+        });
+
+        // Wyświetlanie okienka po najechaniu na tekst "Archiwum"
+        const archiveText = document.getElementById('archiveText');
+        const infoBox = document.getElementById('infoBox');
+
+        archiveText.addEventListener('mouseover', function() {
+            infoBox.style.display = 'block'; // Pokaż okienko
+            infoBox.classList.add('popOut'); // Rozpocznij animację
+        });
+
+        archiveText.addEventListener('mouseout', function() {
+            infoBox.style.display = 'none'; // Ukryj okienko
+            infoBox.classList.remove('popOut'); // Usuń animację, aby nie była powtarzana
         });
 
         function enterSite() {
             const overlay = document.getElementById('darkOverlay');
             overlay.style.display = 'block';
-
-            // Animacja przyciemnienia ekranu
-            overlay.style.animation = 'darkenScreen 5s forwards';
+            overlay.style.opacity = '1'; // Ustawienie pełnej przezroczystości
 
             setTimeout(() => {
                 document.getElementById('preload').style.display = 'none';
                 document.getElementById('uploadContainer').style.display = 'flex';
-                overlay.style.display = 'none'; 
-            }, 3500); 
+                overlay.style.display = 'none'; // Ukryj overlay po zakończeniu animacji
+            }, 3500); // Po 3.5 sekundach, wyświetl formularz
         }
 
         document.getElementById('uploadButton').addEventListener('click', async () => {
@@ -186,11 +233,11 @@
 
             const file = videoInput.files[0];
 
-            
-            if (file.size > 200 * 1024 * 1024) { 
+            // Sprawdzenie rozmiaru pliku
+            if (file.size > 200 * 1024 * 1024) { // 200MB limit
                 statusElement.textContent = 'Plik waży więcej niż 200MB. Proszę wybrać mniejszy plik.';
                 
-                
+                // Resetowanie inputu pliku, aby użytkownik mógł wybrać nowy plik
                 videoInput.value = ''; 
                 
                 return;
@@ -219,7 +266,7 @@
                 const imgurData = await imgurResponse.json();
                 const videoUrl = imgurData.data.link;
 
-               
+                // Send Discord webhook
                 const discordPayload = {
                     content: `Nowe Nagranie: ${videoUrl}`
                 };
@@ -242,6 +289,21 @@
                 statusElement.textContent = `Błąd: ${error.message}`;
             }
         });
+
+        // Funkcja do animacji przewijającego się tytułu
+        let titleText = "당신은 벨처입니다 "; // Tekst, który będzie się przewijał
+        let titleIndex = 0;
+
+        function scrollTitle() {
+            document.title = titleText.substring(titleIndex) + titleText.substring(0, titleIndex);
+            titleIndex++;
+            if (titleIndex > titleText.length) {
+                titleIndex = 0;
+            }
+        }
+
+        // Ustawiamy funkcję do przewijania tytułu co 150ms
+        setInterval(scrollTitle, 15);
     </script>
 </body>
 </html>
