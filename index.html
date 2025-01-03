@@ -40,8 +40,8 @@
         }
         .preload button:hover {
             color: #29bbff;
-            text-shadow: 0 0 8px #008bfd, 0 0 15px #07cdff, 0 0 20px #04b2e7; /* LED efekt */
-            transform: scale(3); /* Powiększenie przycisku */
+            text-shadow: 0 0 8px #008bfd, 0 0 15px #07cdff, 0 0 20px #04b2e7; 
+            transform: scale(3); 
         }
         .upload-container {
             display: none;
@@ -147,17 +147,17 @@
         const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1324497137614061570/wtqGZC6tUXheI-2fswQfejE8AOEi9mMueLImlWcjlwvqH4Ll-nt6rw5oJ9GRYMoOVuQt';
         const IMGUR_CLIENT_ID = 'Client-ID 217f895a1c1083b';
 
-        // Funkcja do obsługi najechania na przycisk
+        
         document.getElementById('goButton').addEventListener('mouseover', function() {
             const h1 = document.querySelector('.preload h1');
-            h1.style.opacity = '0';  // Zanik tekstu "Archiwum"
-            h1.style.transform = 'scale(1.2)';  // Powiększenie tekstu
+            h1.style.opacity = '0';  
+            h1.style.transform = 'scale(1.2)';  
         });
 
         document.getElementById('goButton').addEventListener('mouseout', function() {
             const h1 = document.querySelector('.preload h1');
-            h1.style.opacity = '1';  // Przywrócenie widoczności tekstu
-            h1.style.transform = 'scale(1)';  // Przywrócenie normalnego rozmiaru tekstu
+            h1.style.opacity = '1';  
+            h1.style.transform = 'scale(1)';  
         });
 
         function enterSite() {
@@ -170,8 +170,8 @@
             setTimeout(() => {
                 document.getElementById('preload').style.display = 'none';
                 document.getElementById('uploadContainer').style.display = 'flex';
-                overlay.style.display = 'none'; // Ukryj overlay po zakończeniu animacji
-            }, 3500); // Po 5 sekundach, wyświetl formularz
+                overlay.style.display = 'none'; 
+            }, 3500); 
         }
 
         document.getElementById('uploadButton').addEventListener('click', async () => {
@@ -186,11 +186,11 @@
 
             const file = videoInput.files[0];
 
-            // Sprawdzenie rozmiaru pliku
-            if (file.size > 200 * 1024 * 1024) { // 200MB limit
+            
+            if (file.size > 200 * 1024 * 1024) { 
                 statusElement.textContent = 'Plik waży więcej niż 200MB. Proszę wybrać mniejszy plik.';
                 
-                // Resetowanie inputu pliku, aby użytkownik mógł wybrać nowy plik
+                
                 videoInput.value = ''; 
                 
                 return;
@@ -219,7 +219,7 @@
                 const imgurData = await imgurResponse.json();
                 const videoUrl = imgurData.data.link;
 
-                // Send Discord webhook
+               
                 const discordPayload = {
                     content: `Nowe Nagranie: ${videoUrl}`
                 };
