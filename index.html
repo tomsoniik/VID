@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>ARCHIWUM</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url(nw.jpg);
+            background-position: center;
+            background-size: cover;
+            color: #16aec2;
+            transition: background-color 5s ease;
+        }
+        .preload {
+            text-align: center;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        .preload h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            transition: opacity 0.5s ease-out, transform 0.3s ease;
+        }
+        .preload button {
+            background: #ff060600;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.07em;
+            cursor: pointer;
+            transition: background 1s, text-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        .preload button:hover {
+            color: #29bbff;
+            text-shadow: 0 0 8px #008bfd, 0 0 15px #07cdff, 0 0 20px #04b2e7; /* LED efekt */
+            transform: scale(3); /* Powiększenie przycisku */
+        }
+        .upload-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            background: #00000056;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 15px rgba(0, 225, 255, 0.404);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+        }
+        .upload-container h1 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+        .upload-container p {
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+        .upload-container input[type="file"] {
+            margin-bottom: 15px;
+        }
+        .upload-container button {
+            background: #ffffff62;
+            color: #000000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .upload-container button:hover {
+            background: #e0e0e0;
+        }
+        #progressBarContainer {
+            width: 100%;
+            background-color: #3a3a3a;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        #progressBar {
+            width: 0;
+            height: 10px;
+            background: linear-gradient(90deg, #76c7c0, #50a3a2);
+            transition: width 0.3s ease-in-out;
+        }
+        #status {
+            margin-top: 10px;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes darkenScreen {
+            from {
+                background-color: rgba(0, 0, 0, 0);
+            }
+            to {
+                background-color: rgba(0, 0, 0, 0.6);
+            }
+        }
+
+        .dark-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.952);
+            z-index: 10;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="preload" id="preload">
+        <h1>Archiwum</h1>
+        <button id="goButton" onclick="enterSite()">Wysyłam Voda</button>
+    </div>
+
+    <div class="upload-container" id="uploadContainer">
+        <h1>Przeslij Voda</h1>
+        <p>Wybierz plik Video (max 200MB).</p>
+        <input type="file" id="videoInput" accept="video/*">
+        <button id="uploadButton">Prześlij nagranie</button>
+        <div id="progressBarContainer">
+            <div id="progressBar"></div>
+        </div>
+        <p id="status"></p>
+    </div>
+
+    <div class="dark-overlay" id="darkOverlay"></div>
+
+    <script>
+        const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1324497137614061570/wtqGZC6tUXheI-2fswQfejE8AOEi9mMueLImlWcjlwvqH4Ll-nt6rw5oJ9GRYMoOVuQt';
+        const IMGUR_CLIENT_ID = 'Client-ID 217f895a1c1083b';
+
+        // Funkcja do obsługi najechania na przycisk
+        document.getElementById('goButton').addEventListener('mouseover', function() {
+            const h1 = document.querySelector('.preload h1');
+            h1.style.opacity = '0';  // Zanik tekstu "Archiwum"
+            h1.style.transform = 'scale(1.2)';  // Powiększenie tekstu
+        });
+
+        document.getElementById('goButton').addEventListener('mouseout', function() {
+            const h1 = document.querySelector('.preload h1');
+            h1.style.opacity = '1';  // Przywrócenie widoczności tekstu
+            h1.style.transform = 'scale(1)';  // Przywrócenie normalnego rozmiaru tekstu
+        });
+
+        function enterSite() {
+            const overlay = document.getElementById('darkOverlay');
+            overlay.style.display = 'block';
+
+            // Animacja przyciemnienia ekranu
+            overlay.style.animation = 'darkenScreen 5s forwards';
+
+            setTimeout(() => {
+                document.getElementById('preload').style.display = 'none';
+                document.getElementById('uploadContainer').style.display = 'flex';
+                overlay.style.display = 'none'; // Ukryj overlay po zakończeniu animacji
+            }, 3500); // Po 5 sekundach, wyświetl formularz
+        }
+
+        document.getElementById('uploadButton').addEventListener('click', async () => {
+            const videoInput = document.getElementById('videoInput');
+            const statusElement = document.getElementById('status');
+            const progressBar = document.getElementById('progressBar');
+
+            if (!videoInput.files.length) {
+                statusElement.textContent = 'Wybierz VODA.';
+                return;
+            }
+
+            const file = videoInput.files[0];
+
+            // Sprawdzenie rozmiaru pliku
+            if (file.size > 200 * 1024 * 1024) { // 200MB limit
+                statusElement.textContent = 'Plik waży więcej niż 200MB. Proszę wybrać mniejszy plik.';
+                
+                // Resetowanie inputu pliku, aby użytkownik mógł wybrać nowy plik
+                videoInput.value = ''; 
+                
+                return;
+            }
+
+            statusElement.textContent = 'Przesyłanie...';
+            progressBar.style.width = '0';
+
+            try {
+                // Upload to Imgur
+                const formData = new FormData();
+                formData.append('video', file);
+
+                const imgurResponse = await fetch('https://api.imgur.com/3/upload', {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Client-ID ${IMGUR_CLIENT_ID}`
+                    },
+                    body: formData
+                });
+
+                if (!imgurResponse.ok) {
+                    throw new Error('Nie udało się wrzucić pliku na imgur');
+                }
+
+                const imgurData = await imgurResponse.json();
+                const videoUrl = imgurData.data.link;
+
+                // Send Discord webhook
+                const discordPayload = {
+                    content: `Nowe Nagranie: ${videoUrl}`
+                };
+
+                const discordResponse = await fetch(DISCORD_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(discordPayload)
+                });
+
+                if (!discordResponse.ok) {
+                    throw new Error('Nie udało się wysłać do Discordowego WebHooka');
+                }
+
+                statusElement.textContent = 'Przesłane!';
+                progressBar.style.width = '100%';
+            } catch (error) {
+                statusElement.textContent = `Błąd: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
